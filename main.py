@@ -122,7 +122,32 @@ class all_machines(Resource):
         return ["machines: ", todas]
 
 
+class add_machine(Resource):
+    # Crea una machine y la guarda en bd (1)
+    def post(self):
+        keys = request.form.keys()
+        no_keys = True
+        for k in keys:
+            no_keys = False
+            kj = json.loads(k)
+            machine_colection = mydb["machine"]
+            machine_id = kj["machine_id"]
+            machine = machine_colection.find_one({"_id": machine_id})
+            if machine:
+                return {"result": False}, 400
+            name = kj["name"]
+            owner = ""
+            if 'username' in session:
+                owner = session['username']
+            new_machine = Machine(_id=machine_id, name=name, owner=owner)
+            machine_colection.insert_one(new_machine.machine_to_DB())
+            return new_machine.machine_to_JSON()
+        if no_keys:
+            return {"result": False}, 400
+
+
 api.add_resource(login, '/api/auth/login')
 api.add_resource(logout, '/api/auth/logout')
 api.add_resource(one_machine, '/api/machines/<machine_id>')
 api.add_resource(all_machines, '/api/machines')
+api.add_resource(add_machine, '/api/machines/add-machine')

@@ -8,3 +8,4 @@ curl -i -X DELETE http://localhost:5000/api/machines/98653201
 curl -i -X DELETE http://localhost:5000/api/machines/12345678
 curl -i -H "Accept: application/json"-H "Content-Type: application/json" -X PUT -d '{"owner":"another_renzo"}' http://localhost:5000/api/machines/002R3D4F
 curl -i -H "Accept: application/json"-H "Content-Type: application/json" -X PUT -d '{"owner":"another_renzo"}' http://localhost:5000/api/machines/abcdefgh
+curl -i -H "Accept: application/json"-H "Content-Type: application/json" -X POST -d '{"name":"machine1", "machine_id":"002R3D4F"}' http://localhost:5000/api/machines/add-machine
