@@ -9,13 +9,17 @@ import pymongo
 import hashlib
 import json
 from Machine import Machine, Machine_date_mngmt
+import loadDB
 
 app = Flask(__name__)
 api = Api(app)
 
 
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-mydb = myclient["optiagro_test"]
+dbname = "test_rest"
+if dbname not in myclient.database_names():
+    loadDB.loadDB()
+mydb = myclient[dbname]
 
 # Set the secret key to some random bytes. Keep this really secret!
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
