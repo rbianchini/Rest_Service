@@ -7,6 +7,7 @@ from flask import Flask, session, escape, request
 from flask_restful import Api, Resource
 import pymongo
 import hashlib
+import json
 from Machine import Machine, Machine_date_mngmt
 
 app = Flask(__name__)
@@ -55,38 +56,61 @@ class logout(Resource):
 
 
 class one_machine(Resource):
+    # Retorna una maquina (2.1 y 2.2)
     def get(self, machine_id):
         machine_colection = mydb["machine"]
         machine = machine_colection.find_one({"_id": machine_id})
         if machine:
-            return machine.machine_to_JSON()
+            return Machine(**machine).machine_to_JSON()
         else:
-            return "machine no existe"
+            return {"error": "Not found"}, 404
 
+    # Borra una maquina (4)
     def delete(self, machine_id):
         machine_colection = mydb["machine"]
         machine = machine_colection.find_one({"_id": machine_id})
         if machine:
             machine_colection.delete_one({"_id": machine_id})
-            return "machine borrada con exito"
+            return {"result": True}
         else:
-            return "machine no existe"
+            return {"result": False}
 
+    # Actualiza una maquina (3)
     def put(self, machine_id):
         machine_colection = mydb["machine"]
         machine = machine_colection.find_one({"_id": machine_id})
         if machine:
-            owner = request.form['owner']
-            machine_colection.update_one({"_id": machine_id}, {"owner": owner})
-            machine["owner"] = owner
+            keys = request.form.keys()
+            no_keys = True
+            for k in keys:
+                no_keys = False
+                dic = json.loads(k)
+                query = {"_id": machine_id}
+                if 'owner' in dic:
+                    value = {"$set": {"owner": dic["owner"]}}
+                    machine_colection.update_one(query, value)
+                    machine["owner"] = dic["owner"]
+                elif 'name' in dic:
+                    value = {"$set": {"name": dic["name"]}}
+                    machine_colection.update_one(query, value)
+                    machine["name"] = dic["name"]
+                elif 'description' in dic:
+                    value = {"$set": {"description": dic["description"]}}
+                    machine_colection.update_one(query, value)
+                    machine["description"] = dic["description"]
+                else:
+                    return {"result": False}, 400
+            if no_keys:
+                return {"result": False}, 400
             created = Machine_date_mngmt.date_to_str(machine["created"])
             machine["created"] = created
             return machine
         else:
-            return "machine no existe"
+            return {"result": False}, 404
 
 
 class all_machines(Resource):
+    # Retorna todas las máquinas (2.3)
     def get(self):
         machine_colection = mydb["machine"]
         machines = machine_colection.find()
@@ -95,7 +119,7 @@ class all_machines(Resource):
             created = Machine_date_mngmt.date_to_str(m["created"])
             m["created"] = created
             todas.append(m)
-        return todas
+        return ["machines: ", todas]
 
 
 api.add_resource(login, '/api/auth/login')

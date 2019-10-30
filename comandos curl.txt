@@ -1,0 +1,10 @@
+curl -i http://localhost:5000/api/auth/login
+curl -i -X POST -d "username=Renzo&password=abc123" http://localhost:5000/api/auth/login
+curl -i http://localhost:5000/api/auth/logout
+curl -i http://localhost:5000/api/machines
+curl -i http://localhost:5000/api/machines/12345678
+curl -i http://localhost:5000/api/machines/98653201
+curl -i -X DELETE http://localhost:5000/api/machines/98653201
+curl -i -X DELETE http://localhost:5000/api/machines/12345678
+curl -i -H "Accept: application/json"-H "Content-Type: application/json" -X PUT -d '{"owner":"another_renzo"}' http://localhost:5000/api/machines/002R3D4F
+curl -i -H "Accept: application/json"-H "Content-Type: application/json" -X PUT -d '{"owner":"another_renzo"}' http://localhost:5000/api/machines/abcdefgh

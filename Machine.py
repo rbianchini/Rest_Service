@@ -3,7 +3,9 @@ import datetime
 
 class Machine:
 
-    def __init__(self, _id, name, description="", created="", owner=""):
+    def __init__(self, _id, name, description="",
+                 created=datetime.datetime.now().replace(microsecond=0),
+                 owner=""):
         if self.check_name(name):
             if self.check_id(_id):
                 self.name = name
@@ -12,7 +14,7 @@ class Machine:
                     self.description = name
                 else:
                     self.description = description
-                if created == "":
+                if isinstance(created, datetime.datetime):
                     self.created = datetime.datetime.now().\
                         replace(microsecond=0)
                 else:
@@ -60,4 +62,4 @@ class Machine_date_mngmt:
         return created.strftime("%Y-%m-%d %H:%M:%S")
 
     def str_to_date(created):
-        return(created.strftime("%Y-%m-%d %H:%M:%S"))
+        return(datetime.strptime(created, '%Y-%m-%d %H:%M:%S'))
